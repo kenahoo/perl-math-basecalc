@@ -5,7 +5,7 @@ use Carp;
 use vars qw($VERSION);
 
 # I think I can control this.
-$VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /: (\d+).(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /: (\d+).(\d+)/;
 
 sub new {
   my ($pack, %opts) = @_;
@@ -49,9 +49,8 @@ sub _digitsets {
 
 sub from_base {
   my $self = shift;
+  return -1*$self->from_base(substr($_[0],1)) if $_[0] =~ /^-/; # Handle negative numbers
   my $str = reverse shift;
-
-  return -1*$self->from_base(substr($str,1)) if substr($str,0,1) eq '-'; # Handle negative numbers
   
   my $dignum = @{$self->{digits}};
   

@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..7\n"; }
+BEGIN { $| = 1; print "1..9\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Math::BaseCalc;
 $loaded = 1;
@@ -33,7 +33,16 @@ $result = $calc->to_base(46);
 
 $calc->digits([qw(i  a m  v e r y  p u n k)]);
 $result = $calc->to_base(13933);
-&report($result == 'krap', "$result\n");
+&report($result eq 'krap', "$result\n");
+
+$calc->digits('hex');
+$result = $calc->to_base('-17');
+&report($result eq '-11', "$result\n");
+
+$calc->digits('hex');
+$result = $calc->from_base('-11');
+&report($result eq '-17', "$result\n");
+
 
 sub report {
   my $bad = !shift;
