@@ -5,7 +5,7 @@ use Carp;
 use vars qw($VERSION);
 
 # I think I can control this.
-$VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /: (\d+).(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /: (\d+).(\d+)/;
 
 sub new {
   my ($pack, %opts) = @_;
@@ -50,16 +50,24 @@ sub _digitsets {
 sub from_base {
   my $self = shift;
   return -1*$self->from_base(substr($_[0],1)) if $_[0] =~ /^-/; # Handle negative numbers
-  my $str = reverse shift;
-  
+  my $str = shift;
   my $dignum = @{$self->{digits}};
   
+  # Deal with stuff after the decimal point
+  my $add_in = 0;
+  if ($str =~ s/\.(.+)//) {
+    $add_in = $self->from_base(reverse $1)/$dignum**length($1);
+  }
+  
+  my $str = reverse $str;
   my $result = 0;
   while (length $str) {
-    $result *= $dignum;
-    $result += $self->{trans}{chop $str};
+    # For large numbers, force result to be an integer (not a float)
+    $result = int($result*$dignum + $self->{trans}{chop $str});
   }
-  return $result;
+
+  # The bizarre-looking next line is necessary for proper handling of very large numbers
+  return $add_in ? $result + $add_in : $result;
 }
 
 sub to_base {
@@ -68,11 +76,10 @@ sub to_base {
   
   my $dignum = @{$self->{digits}};
   
-  use integer;
   my $result = '';
   while ($num>0) {
     substr($result,0,0) = $self->{digits}[ $num % $dignum ];
-    $num /= $dignum;
+    $num = int ($num/$dignum);
   }
   return length $result ? $result : $self->{digits}[0];
 }
@@ -91,7 +98,7 @@ Math::BaseCalc - Convert numbers between various bases
   use Math::BaseCalc;
 
   my $calc = new Math::BaseCalc(digits => [0,1]); #Binary
-  my $bin_string = $calc->to_base(65); # Convert 465 to binary
+  my $bin_string = $calc->to_base(465); # Convert 465 to binary
 
   $calc->digits('oct'); # Octal
   my $number = $calc->from_base('1574'); # Convert octal 1574 to decimal
@@ -112,7 +119,7 @@ To convert between, say, base 7 and base 36, use the 2-step process
 of first converting to a Perl number, then to the desired base for the
 result:
 
- $calc7  = new Math::BaseCalc(digits=>[0..7]);
+ $calc7  = new Math::BaseCalc(digits=>[0..6]);
  $calc36 = new Math::BaseCalc(digits=>[0..9,'a'..'z'];
  
  $in_base_36 = $calc36->to_base( $calc7->from_base('3506') );
@@ -137,14 +144,13 @@ of one of the predefined digit sets (see the digit() method below).
 =item * $calc->to_base(NUMBER)
 
 Converts a number to a string representing that number in the
-associated base.  Currently only handles integers.
+associated base.
 
 =item * $calc->from_base(STRING)
 
 Converts a string representing a number in the associated base to a
-Perl integer.  Currently only handles integers.  The behavior when fed
-strings with characters not in $calc's digit set is currently
-undefined.
+Perl integer.  The behavior when fed strings with characters not in
+$calc's digit set is currently undefined.
 
 =item * $calc->digits
 
