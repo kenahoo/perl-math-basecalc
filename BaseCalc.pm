@@ -5,7 +5,7 @@ use Carp;
 use vars qw($VERSION);
 
 # I think I can control this.
-$VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /: (\d+).(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /: (\d+).(\d+)/;
 
 sub new {
   my ($pack, %opts) = @_;
@@ -80,6 +80,7 @@ sub to_base {
   while ($num>0) {
     substr($result,0,0) = $self->{digits}[ $num % $dignum ];
     $num = int ($num/$dignum);
+    #$num = (($num - ($num % $dignum))/$dignum);  # An alternative to the above
   }
   return length $result ? $result : $self->{digits}[0];
 }
