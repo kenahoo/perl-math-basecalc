@@ -3,7 +3,7 @@ package Math::BaseCalc;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '$version$';
+$VERSION = '$revision$';
 
 sub new {
     my ($pack, %opts) = @_;
