@@ -3,9 +3,7 @@ package Math::BaseCalc;
 use strict;
 use Carp;
 use vars qw($VERSION);
-
-# I think I can control this.
-$VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /: (\d+).(\d+)/;
+$VERSION = '1.011';
 
 sub new {
   my ($pack, %opts) = @_;
@@ -59,7 +57,7 @@ sub from_base {
     $add_in = $self->from_base(reverse $1)/$dignum**length($1);
   }
   
-  my $str = reverse $str;
+  $str = reverse $str;
   my $result = 0;
   while (length $str) {
     # For large numbers, force result to be an integer (not a float)
