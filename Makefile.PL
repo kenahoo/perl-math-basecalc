@@ -4,4 +4,5 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'	=> 'Math::BaseCalc',
     'VERSION_FROM' => 'BaseCalc.pm', # finds $VERSION
+    'dist' => { COMPRESS=>"gzip", SUFFIX=>"gz" },
 );
