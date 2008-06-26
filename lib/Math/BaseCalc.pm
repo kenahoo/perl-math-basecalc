@@ -3,7 +3,7 @@ package Math::BaseCalc;
 use strict;
 use Carp;
 use vars qw($VERSION);
-$VERSION = '1.011';
+$VERSION = '1.012';
 
 sub new {
   my ($pack, %opts) = @_;
@@ -36,13 +36,13 @@ sub digits {
 
 sub _digitsets {
   return (
-	  'bin' => [0,1],
-	  'hex' => [0..9,'a'..'f'],
-	  'HEX' => [0..9,'A'..'F'],
-	  'oct' => [0..7],
-	  '64'  => ['A'..'Z','a'..'z',0..9,'+','/'],
-	  '62'  => [0..9,'a'..'z','A'..'Z'],
-	 );
+      'bin' => [0,1],
+      'hex' => [0..9,'a'..'f'],
+      'HEX' => [0..9,'A'..'F'],
+      'oct' => [0..7],
+      '64'  => ['A'..'Z','a'..'z',0..9,'+','/'],
+      '62'  => [0..9,'a'..'z','A'..'Z'],
+     );
 }
 
 sub from_base {
@@ -50,13 +50,13 @@ sub from_base {
   return -1*$self->from_base(substr($_[0],1)) if $_[0] =~ /^-/; # Handle negative numbers
   my $str = shift;
   my $dignum = @{$self->{digits}};
-  
+
   # Deal with stuff after the decimal point
   my $add_in = 0;
   if ($str =~ s/\.(.+)//) {
     $add_in = $self->from_base(reverse $1)/$dignum**length($1);
   }
-  
+
   $str = reverse $str;
   my $result = 0;
   while (length $str) {
@@ -71,9 +71,9 @@ sub from_base {
 sub to_base {
   my ($self,$num) = @_;
   return '-'.$self->to_base(-1*$num) if $num<0; # Handle negative numbers
-  
+
   my $dignum = @{$self->{digits}};
-  
+
   my $result = '';
   while ($num>0) {
     substr($result,0,0) = $self->{digits}[ $num % $dignum ];
@@ -120,7 +120,7 @@ result:
 
  $calc7  = new Math::BaseCalc(digits=>[0..6]);
  $calc36 = new Math::BaseCalc(digits=>[0..9,'a'..'z'];
- 
+
  $in_base_36 = $calc36->to_base( $calc7->from_base('3506') );
 
 If you just need to handle regular octal & hexdecimal strings, you
@@ -167,7 +167,7 @@ Currently the predefined digit sets are:
        oct => [0..7],
        64  => ['A'..'Z','a'..'z',0..9,'+','/'],
        62  => [0..9,'a'..'z','A'..'Z'],
- 
+
  Examples:
   $calc->digits('bin');
   $calc->digits([0..7]);

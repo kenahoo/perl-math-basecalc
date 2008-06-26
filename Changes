@@ -1,6 +1,14 @@
 Revision history for Perl extension Math::BaseCalc.
 
+ - Modernized the layout of the distribution, including a lib/
+   directory, t/ directory, and using Test::More instead of rolling my
+   own TAP function.  [Todd E. Rinaldo]
+
+1.011 ??
+
+
 1.009  Thu Mar 29 21:28:57 EST 2001
+
    - Now supports non-integers.  Thanks to jdimov@cis.clarion.edu for
      idea (though I used a different implementation)
 
