@@ -1,0 +1,13 @@
+^MANIFEST.
+^Makefile$
+^Makefile.old$
+^blib/
+^pm_to_blib$
+CVS
+~$
+^README$
+^Math-BaseCalc
+^\.cvsignore
+^\.releaserc
+^_build
+^Build$

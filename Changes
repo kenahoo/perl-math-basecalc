@@ -4,22 +4,25 @@ Revision history for Perl extension Math::BaseCalc.
    directory, t/ directory, and using Test::More instead of rolling my
    own TAP function.  [Todd E. Rinaldo]
 
-1.011 ??
+1.011  Sat Mar 09 22:46:07 2002
 
+ - Fixed a warning & a couple of tiny doc errors
 
 1.009  Thu Mar 29 21:28:57 EST 2001
 
-   - Now supports non-integers.  Thanks to jdimov@cis.clarion.edu for
-     idea (though I used a different implementation)
+ - Now supports non-integers.  Thanks to jdimov@cis.clarion.edu for
+   idea (though I used a different implementation)
 
-   - Handles large numbers (bigger than 2^32, or type 'int').
-     [mizuhara@bellsouth.net (Mizuhara Mokoto)]
+ - Handles large numbers (bigger than 2^32, or type 'int').
+   [mizuhara@bellsouth.net (Mizuhara Mokoto)]
 
 1.008  2000/08/28 14:56:09
-   - Fixed a problem with from_base() and negative numbers.  They were
-     being treated as positive numbers.  [armengou@fonocom.es (Xavier Armengou)]
+
+ - Fixed a problem with from_base() and negative numbers.  They were
+   being treated as positive numbers.  [armengou@fonocom.es (Xavier Armengou)]
 
 
 1.007  Sun May 23 19:23:33 1999
-   - original version
+
+ - original version
 

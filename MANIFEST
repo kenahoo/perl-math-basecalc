@@ -3,7 +3,6 @@ Changes
 lib/Math/BaseCalc.pm
 Makefile.PL
 MANIFEST
-README
+META.yml
 t/01_basic_tests.t
 t/99_podcoverage.t
-META.yml
