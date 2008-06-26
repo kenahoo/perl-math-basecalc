@@ -6,3 +6,4 @@ MANIFEST
 README
 t/01_basic_tests.t
 t/99_podcoverage.t
+META.yml
