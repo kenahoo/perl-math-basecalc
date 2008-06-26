@@ -1,6 +1,8 @@
-BaseCalc.pm
+Build.PL
 Changes
-MANIFEST
+lib/Math/BaseCalc.pm
 Makefile.PL
+MANIFEST
 README
-test.pl
+t/01_basic_tests.t
+t/99_podcoverage.t
