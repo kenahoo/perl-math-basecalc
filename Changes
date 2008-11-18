@@ -1,5 +1,8 @@
 Revision history for Perl extension Math::BaseCalc.
 
+ - Fixed a test failure that occurred on some subset of 64-bit
+   machines. [Brian Szymanski, Andreas J. König]
+
  - Moved the repository to SVN hosting at code.google.com instead of
    CVS on my laptop.
 
