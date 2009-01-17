@@ -1,5 +1,7 @@
 Revision history for Perl extension Math::BaseCalc.
 
+1.13 - Sat Jan 17 17:23:22 2009
+
  - Fixed a test failure that occurred on some subset of 64-bit
    machines. [Brian Szymanski, Andreas J. König]
 
