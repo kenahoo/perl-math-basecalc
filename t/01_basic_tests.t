@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests =>13;
+use Test::More tests =>15;
 use_ok('Math::BaseCalc');
 
 my $calc = new Math::BaseCalc(digits=>[0,1]);
@@ -77,3 +77,12 @@ isa_ok($calc, "Math::BaseCalc");
   is($third, '10011111111010', "1110111 x 1010110 = 10011111111010");
 }
 
+{
+  $calc->digits(['a', 'b', 'c']);
+  my $result = $calc->from_base('-bba');
+  is($result, '-12', "negative numbers treated correctly");
+
+  $calc->digits(['a', 'b', '-']);
+  $result = $calc->from_base('-bba');
+  is($result, 2*27+9+3, "dash can be a digit");
+}

@@ -3,11 +3,12 @@ package Math::BaseCalc;
 use strict;
 use Carp;
 use vars qw($VERSION);
-$VERSION = '1.013';
+$VERSION = '1.014';
 
 sub new {
   my ($pack, %opts) = @_;
   my $self = bless {}, $pack;
+  $self->{has_dash} = 0; 
   $self->digits($opts{digits});
   return $self;
 }
@@ -17,6 +18,7 @@ sub digits {
   if (@_) {
     # Set the value
 
+
     if (ref $_[0]) {
       $self->{digits} = [ @{ shift() } ];
     } else {
@@ -25,6 +27,7 @@ sub digits {
       croak "Unrecognized digit set '$name'" unless exists $digitsets{$name};
       $self->{digits} = $digitsets{$name};
     }
+    $self->{has_dash} = grep { $_ eq '-' } @{$self->{digits}};
 
     # Build the translation table back to numbers
     @{$self->{trans}}{@{$self->{digits}}} = 0..$#{$self->{digits}};
@@ -47,7 +50,7 @@ sub _digitsets {
 
 sub from_base {
   my $self = shift;
-  return -1*$self->from_base(substr($_[0],1)) if $_[0] =~ /^-/; # Handle negative numbers
+  return -1*$self->from_base(substr($_[0],1)) if !$self->{has_dash} && $_[0] =~ /^-/; # Handle negative numbers
   my $str = shift;
   my $dignum = @{$self->{digits}};
 
@@ -139,6 +142,9 @@ Create a new base calculator.  You may specify the digit set to use,
 by either giving the digits in a list reference (in increasing order,
 with the 'zero' character first in the list) or by specifying the name
 of one of the predefined digit sets (see the digit() method below).
+
+If your digit set includes the character C<->, then a dash at the
+beginning of a number will no longer signify a negative number.
 
 =item * $calc->to_base(NUMBER)
 
