@@ -122,7 +122,7 @@ of first converting to a Perl number, then to the desired base for the
 result:
 
  $calc7  = new Math::BaseCalc(digits=>[0..6]);
- $calc36 = new Math::BaseCalc(digits=>[0..9,'a'..'z'];
+ $calc36 = new Math::BaseCalc(digits=>[0..9,'a'..'z']);
 
  $in_base_36 = $calc36->to_base( $calc7->from_base('3506') );
 
