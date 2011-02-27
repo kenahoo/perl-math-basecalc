@@ -1,9 +1,13 @@
 Revision history for Perl extension Math::BaseCalc.
 
+1.14 - Sat Feb 26 21:06:25 CST 2011
+
  - Added the ability to use a dash as a valid digit, which turns off
    recognition of negative numbers. [Nicolas]
 
  - Fixed typo in docs. [Takayuki Kawakami]
+
+ - Updated distribution to use Dist::Zilla.
 
 1.13 - Sat Jan 17 17:23:22 2009
 
