@@ -1,5 +1,10 @@
 Revision history for Perl extension Math::BaseCalc.
 
+1.15
+
+ - Fixed a problem converting very-large numbers (near the integer
+   limits of Perl's native types). [Spotted by Jacob Bunk Nielsen]
+
 1.14 - Sat Feb 26 21:06:25 CST 2011
 
  - Added the ability to use a dash as a valid digit, which turns off

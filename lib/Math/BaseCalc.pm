@@ -80,7 +80,8 @@ sub to_base {
   my $result = '';
   while ($num>0) {
     substr($result,0,0) = $self->{digits}[ $num % $dignum ];
-    $num = int ($num/$dignum);
+    use integer;
+    $num /= $dignum;
     #$num = (($num - ($num % $dignum))/$dignum);  # An alternative to the above
   }
   return length $result ? $result : $self->{digits}[0];
