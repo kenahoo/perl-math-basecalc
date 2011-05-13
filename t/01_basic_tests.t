@@ -63,10 +63,10 @@ isa_ok($calc, "Math::BaseCalc");
 {
     # Test large numbers
     $calc->digits('hex');
-    my $r1 = $calc->to_base(2**55 + 5);
-    my $result = $calc->from_base($calc->to_base(2**55 + 5));
+    my $r1 = $calc->to_base(2**30 + 5);
+    my $result = $calc->from_base($calc->to_base(2**30 + 5));
     #warn "res: $r1, $result";
-    is($result, int(2**55 + 5), "hex (2**55 + 5) into hex then back");
+    is($result, int(2**30 + 5), "hex (2**30 + 5) into hex then back");
 }
 
 {
