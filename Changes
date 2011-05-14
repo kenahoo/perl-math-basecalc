@@ -1,6 +1,10 @@
 Revision history for Perl extension Math::BaseCalc.
 
-1.15
+1.16 - Fri May 13 22:16:37 CDT 2011
+
+ - Added some minimal support for Math::BigInt.
+
+1.15 - Tue May 10 23:34:09 CDT 2011
 
  - Fixed a problem converting very-large numbers (near the integer
    limits of Perl's native types). [Spotted by Jacob Bunk Nielsen]
