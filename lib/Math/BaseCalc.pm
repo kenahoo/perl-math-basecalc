@@ -152,11 +152,18 @@ beginning of a number will no longer signify a negative number.
 Converts a number to a string representing that number in the
 associated base.
 
+If C<NUMBER> is a C<Math::BigInt> object, C<to_base()> will still work
+fine and give you an exact result string.
+
 =item * $calc->from_base(STRING)
 
 Converts a string representing a number in the associated base to a
 Perl integer.  The behavior when fed strings with characters not in
 $calc's digit set is currently undefined.
+
+If C<STRING> converts to a number too large for perl's integer
+representation, beware that the result may be auto-converted to a
+floating-point representation and thus only be an approximation.
 
 =item * $calc->digits
 
