@@ -29,6 +29,7 @@ sub digits {
     }
     $self->{has_dash} = grep { $_ eq '-' } @{$self->{digits}};
 
+    $self->{trans} = {};
     # Build the translation table back to numbers
     @{$self->{trans}}{@{$self->{digits}}} = 0..$#{$self->{digits}};
 
@@ -62,9 +63,11 @@ sub from_base {
 
   $str = reverse $str;
   my $result = 0;
+  my $trans = $self->{trans};
   while (length $str) {
+    return undef unless exists $trans->{substr($str,0,1)};
     # For large numbers, force result to be an integer (not a float)
-    $result = int($result*$dignum + $self->{trans}{chop $str});
+    $result = int($result*$dignum + $trans->{chop $str});
   }
 
   # The bizarre-looking next line is necessary for proper handling of very large numbers

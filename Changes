@@ -1,5 +1,10 @@
 Revision history for Perl extension Math::BaseCalc.
 
+1.17
+
+ - Fixed problem that occurs when digits of an M::BC object are
+   changed. [John M. Gamble]
+
 1.16 - Fri May 13 22:16:37 CDT 2011
 
  - Added some minimal support for Math::BigInt.
