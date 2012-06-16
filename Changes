@@ -1,5 +1,21 @@
 Revision history for Perl extension Math::BaseCalc.
 
+1.2
+
+ Several changes by Brendan Byrd:
+ 
+ - Complete support for large numbers in all directions, and
+   for large floats.
+ - Ability to specify a different negative sign or radix point,
+   if - or . will be used as a digit.
+ - Short-circuiting to the more efficient sprintf/oct functions
+   for bin/hex/oct conversions.
+ - Ditching Horner’s algorithm in favor of exponent-based one that
+   is more accurate for fractionals.
+ - Module will die if an invalid character is found.
+ - Changed tests to use new_ok if possible.
+ - Added Unicode tests to make sure they continue to work.
+
 1.17
 
  - Fixed problem that occurs when digits of an M::BC object are

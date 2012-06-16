@@ -5,8 +5,7 @@ use warnings;
 use Test::More tests =>15;
 use_ok('Math::BaseCalc');
 
-my $calc = new Math::BaseCalc(digits=>[0,1]);
-isa_ok($calc, "Math::BaseCalc");
+my $calc = new_ok("Math::BaseCalc", [ digits=>[0,1] ]);
 
 {
     my $result = $calc->from_base('01101');
@@ -57,7 +56,7 @@ isa_ok($calc, "Math::BaseCalc");
 {
     $calc->digits([0..6]);
     my $result = $calc->from_base('0.1');
-    is($result, (1/7), "base 6 float (.1) converts to decimal (1/7).");
+    is($result, '0.142857142857142857142857142857143', "base 6 float (.1) converts to decimal (1/7).");
 }
 
 {
