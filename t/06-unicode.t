@@ -7,11 +7,10 @@ plan tests => 4*4 + 1;
 use_ok('Math::BaseCalc');
 
 my $char90 = [0..9, 'A'..'Z', 'a'..'z', split(//, '!#$%&()*+,-/:;<=>?@[]^_`{|}~')];
-my $char48890 = [
+my $char48900 = [
    @$char90,
-   '¢'..'¬',
    map { chr } (
-       0xae..0x2e9, 0x2ec..0x2ff, 0x370..0x377, 0x37a..0x37e, 0x384..0x38a, 0x38c, 0x38e..0x3a1, 0x3a3..0x3e1,
+        0xa2..0xac,  0xae..0x2e9, 0x2ec..0x2ff, 0x370..0x377, 0x37a..0x37e, 0x384..0x38a, 0x38c, 0x38e..0x3a1, 0x3a3..0x3e1,
       0x3f0..0x482, 0x48a..0x513, 0x531..0x556, 0x559..0x55f, 0x561..0x587, 0x589, 0x58a, 0x5be, 0x5c0,
       0x5c3, 0x5c6, 0x5d0..0x5ea, 0x5f0..0x5f4, 0x606..0x60f, 0x61b, 0x61e..0x64a, 0x660..0x66f,
       0x671..0x6d5, 0x6de, 0x6e5, 0x6e6, 0x6e9, 0x6ee..0x70d, 0x710, 0x712..0x72f, 0x74d..0x7b1,
@@ -54,19 +53,21 @@ my $char48890 = [
    )
 ];
 
-roundtrip48890( 1, '1' );
-roundtrip48890( 48889, chr 0xffee );
-roundtrip48890( 48890, '10' );
-roundtrip48890( 48889*48890 + 89 , chr(0xffee).'~' );
+binmode(STDOUT, ":utf8");  # prevent Wide char warnings
 
-sub roundtrip48890 {
+roundtrip48900( 1, '1' );
+roundtrip48900( 48899, chr 0xffee );
+roundtrip48900( 48900, '10' );
+roundtrip48900( 48899*48900 + 89 , chr(0xffee).'~' );
+
+sub roundtrip48900 {
   my ($num, $expect) = @_;
 
-  my $calc48890 = new_ok('Math::BaseCalc' => [digits=>$char48890]);
-  my $base48890 = $calc48890->to_base($num);
-  is($base48890, $expect, "to_base has done proper conversion of $num");
-  my $num2 = $calc48890->from_base($base48890);
+  my $calc48900 = new_ok('Math::BaseCalc' => [digits=>$char48900]);
+  my $base48900 = $calc48900->to_base($num);
+  is($base48900, $expect, "to_base has done proper conversion of $num");
+  my $num2 = $calc48900->from_base($base48900);
   is($num2, $num, "$num has roundtripped");
-  $num2 = $calc48890->from_base($expect);
-  is($num2, $num, "from_base correct for $expect ($num)");
+  $num2 = $calc48900->from_base($expect);
+  is($num2, $num, "from_base correct for expect ($num)");
 }
