@@ -1,2 +1,17 @@
 .build
 *~
+Build
+Build.bat
+MANIFEST
+MANIFEST.bak
+META.*
+MYMETA.*
+Makefile
+Makefile.old
+_build/
+blib/
+inc/
+Math-BaseCalc-*/
+Math-BaseCalc-*.tar.*
+pm_to_blib
+.*.sw?

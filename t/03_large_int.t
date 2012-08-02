@@ -1,4 +1,4 @@
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 use strict;
 use warnings;
@@ -6,7 +6,7 @@ use Config;
 
 use_ok('Math::BaseCalc');
 
-if ($Config{use64bitint} eq 'define') {
+if ($Config{use64bitint} && $Config{use64bitint} eq 'define') {
   my $x = do {use integer; 2**63-1};
   roundtrip36( $x, '1y2p0ij32e8e7' );
 } else {
@@ -17,7 +17,7 @@ if ($Config{use64bitint} eq 'define') {
 sub roundtrip36 {
   my ($int, $int_base36) = @_;
 
-  my $calc36 = new Math::BaseCalc(digits=>[0..9,'a'..'z']);
+  my $calc36 = new_ok('Math::BaseCalc' => [digits=>[0..9,'a'..'z']]);
   my $base36 = $calc36->to_base($int);
   is($base36, $int_base36, "to_base has done proper conversion of $int");
   my $int2 = $calc36->from_base($base36);
