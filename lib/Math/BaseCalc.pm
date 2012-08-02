@@ -81,10 +81,7 @@ sub from_base {
   $str =~ s/\Q$zero\E+$// if ($is_dec);
 
   # upgrade doesn't work as well as it should...
-  ## no critic (TestingAndDebugging::ProhibitNoStrict)
-  no strict 'subs';
-  my $big_class = $is_dec ? Math::BigFloat : Math::BigInt;
-  use strict 'subs';
+  my $big_class = $is_dec ? Math::BigFloat:: : Math::BigInt::;
   
   # num of digits + big number support
   my $poten_digits = int(length($str) * $self->{digit_strength}) + 16;
@@ -134,10 +131,7 @@ sub to_base {
   my $zero = $self->{digits}[0];
 
   # upgrade doesn't work as well as it should...
-  ## no critic (TestingAndDebugging::ProhibitNoStrict)
-  no strict 'subs';
-  my $big_class = $is_dec ? Math::BigFloat : Math::BigInt;
-  use strict 'subs';
+  my $big_class = $is_dec ? Math::BigFloat:: : Math::BigInt::;
 
   # num of digits + big number support
   my $poten_digits = length($num);
