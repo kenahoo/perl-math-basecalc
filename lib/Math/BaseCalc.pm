@@ -65,6 +65,7 @@ sub from_base {
   my $result = 0;
   my $trans = $self->{trans};
   while (length $str) {
+    ## no critic
     return undef unless exists $trans->{substr($str,0,1)};
     # For large numbers, force result to be an integer (not a float)
     $result = int($result*$dignum + $trans->{chop $str});
