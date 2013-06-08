@@ -1,9 +1,11 @@
 Revision history for Perl extension Math::BaseCalc.
 
-1.17
+1.17 - Fri Jun  7 21:54:56 CDT 2013
 
  - Fixed problem that occurs when digits of an M::BC object are
    changed. [John M. Gamble]
+
+ - Moved repository from Google Code to GitHub.
 
 1.16 - Fri May 13 22:16:37 CDT 2011
 
