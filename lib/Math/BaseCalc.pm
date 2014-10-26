@@ -196,12 +196,6 @@ currently undefined.
 
 =back
 
-=head1 QUESTIONS
-
-The '64' digit set is meant to be useful for Base64 encoding.  I took
-it from the MIME::Base64.pm module.  Does it look right?  It's sure in
-a strange order.
-
 =head1 AUTHOR
 
 Ken Williams, kwilliams@cpan.org
