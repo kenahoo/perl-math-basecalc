@@ -204,7 +204,7 @@ a strange order.
 
 =head1 AUTHOR
 
-Ken Williams, ken@forum.swarthmore.edu
+Ken Williams, kwilliams@cpan.org
 
 =head1 COPYRIGHT
 
