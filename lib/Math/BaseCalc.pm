@@ -27,7 +27,13 @@ sub digits {
       croak "Unrecognized digit set '$name'" unless exists $digitsets{$name};
       $self->{digits} = $digitsets{$name};
     }
-    $self->{has_dash} = grep { $_ eq '-' } @{$self->{digits}};
+    foreach my $digit (@{$self->{digits}}) {
+      if ($digit eq '-') {
+        $self->{has_dash} = 1;
+      } elsif ($digit eq '.') {
+        $self->{has_dot} = 1;
+      }
+    }
 
     $self->{trans} = {};
     # Build the translation table back to numbers
@@ -57,7 +63,7 @@ sub from_base {
 
   # Deal with stuff after the decimal point
   my $add_in = 0;
-  if ($str =~ s/\.(.+)//) {
+  if (!$self->{has_dot} && $str =~ s/\.(.+)//) {
     $add_in = $self->from_base(reverse $1)/$dignum**length($1);
   }
 
