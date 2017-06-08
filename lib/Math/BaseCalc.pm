@@ -2,8 +2,6 @@ package Math::BaseCalc;
 
 use strict;
 use Carp;
-use vars qw($VERSION);
-$VERSION = '1.014';
 
 sub new {
   my ($pack, %opts) = @_;
