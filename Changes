@@ -1,5 +1,9 @@
 Revision history for Perl extension Math::BaseCalc.
 
+1.19 - Thu Jun  8 00:20:13 CDT 2017
+
+ - No code changes; didn't update the version number correctly in the last release.
+
 1.18 - Sat Jun  3 20:21:33 CDT 2017
 
  - If '.' is part of the digit set, from_base() now deals it properly,
