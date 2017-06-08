@@ -1,6 +1,5 @@
-package Math::BaseCalc;
-
 use strict;
+package Math::BaseCalc;
 use Carp;
 
 sub new {
