@@ -23,7 +23,7 @@ sub roundtrip36 {
   my $base36 = $calc36->to_base($num);
   is($base36, $expect, "to_base has done proper conversion of $num");
   my $num2 = $calc36->from_base($base36);
-  is($num2, $num->numify, "$num has roundtripped");
+  is($num2, $num, "$num has roundtripped");
   $num2 = $calc36->from_base($expect);
-  is($num2, $num->numify, "from_base correct for $expect ($num)");
+  is($num2, $num, "from_base correct for $expect ($num)");
 }
