@@ -11,7 +11,7 @@ if ($@) {
 } elsif ($Config{ivsize} != 8) {
   plan skip_all => "Requires 64-bit integers";
 } else {
-  plan tests => 51;
+  plan tests => 64;
 }
 
 use_ok('Math::BaseCalc');
@@ -66,3 +66,22 @@ my $calc36 = new Math::BaseCalc(digits=>[0..9,'a'..'z']);
 # Floats are converted according to their exact value
 is($calc16->to_base(2**70), '400000000000000000', "to_base(2**70)");
 is($calc10->to_base(1e20), '100000000000000000000', "to_base(1e20)");
+
+# Negative numbers: the native range only reaches -2**63
+{
+  my @cases = (
+    [ '-9223372036854775807',  '-7fffffffffffffff', 0 ],
+    [ '-9223372036854775808',  '-8000000000000000', 0 ],
+    [ '-9223372036854775809',  '-8000000000000001', 1 ],
+    [ '-18446744073709551615', '-ffffffffffffffff', 1 ],
+  );
+  foreach my $case (@cases) {
+    my ($dec, $hex, $big) = @$case;
+    my $back = $calc16->from_base($hex);
+    is("$back", $dec, "from_base($hex) is exact");
+    is(ref $back, $big ? 'Math::BigInt' : '', "from_base($hex) is " . ($big ? 'a Math::BigInt' : 'a native number'));
+    is($calc10->from_base($dec), $dec, "from_base($dec) in base 10 is exact");
+  }
+}
+
+is($calc16->to_base(-0.5), '0', "to_base(-0.5) has no minus sign");

@@ -19,6 +19,10 @@ Unreleased
  - to_base() croaks when given an infinity or NaN, rather than
    returning the zero digit.
 
+ - to_base() of a number between -1 and 0, such as -0.5, now returns
+   the zero digit rather than the zero digit with a minus sign ("0",
+   not "-0").
+
 1.19 - Thu Jun  8 00:20:13 CDT 2017
 
  - No code changes; didn't update the version number correctly in the last release.

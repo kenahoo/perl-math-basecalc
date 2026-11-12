@@ -55,7 +55,21 @@ sub _digitsets {
 
 sub from_base {
   my $self = shift;
-  return -1*$self->from_base(substr($_[0],1)) if !$self->{has_dash} && $_[0] =~ /^-/; # Handle negative numbers
+  if (!$self->{has_dash} && $_[0] =~ /^-/) { # Handle negative numbers
+    my $abs = $self->from_base(substr($_[0],1));
+    $abs = 0 unless defined $abs; # Invalid digits after the sign give 0, as before
+
+    # Native integers are lopsided: they reach 2**64-1 when positive
+    # (unsigned) but only -2**63 when negative (signed).  Negating a
+    # magnitude above 2**63 therefore cannot give a native integer; Perl
+    # would quietly produce a float, and e.g. -18446744073709551615
+    # would round to -18446744073709551616.  Use Math::BigInt for those.
+    # (The digits-only check leaves alone a magnitude that is already a
+    # float because it had a fractional part; those print as 1.8e+19.)
+    $abs = Math::BigInt->new($abs)
+      if !ref $abs && $abs > (~0 >> 1) + 1 && "$abs" =~ /^\d+$/;
+    return -$abs;
+  }
   my $str = shift;
   my $dignum = @{$self->{digits}};
 
@@ -235,6 +249,10 @@ A float passed to to_base() is converted according to its exact value,
 which may not be the number you wrote in your source code; pass a
 string or a L<Math::BigInt> to avoid that.  A number with a fractional
 part is always returned by from_base() as a float.
+
+Note that the native range is not symmetric: it runs from C<-2**63> to
+C<2**64-1> on a 64-bit perl.  So from_base() returns a native integer
+for C<18446744073709551615>, but a L<Math::BigInt> for its negative.
 
 If you just need to handle regular octal & hexdecimal strings, you
 probably don't need this module.  See the sprintf(), oct(), and hex()
