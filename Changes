@@ -1,5 +1,28 @@
 Revision history for Perl extension Math::BaseCalc.
 
+Unreleased
+
+ - to_base() returned garbage for native integers above 2**63-1 (for
+   example, to_base(2**64-1) in hex gave "f"), because the division
+   was done under "use integer", which is signed.
+
+ - to_base() now converts integers that are too large for a native
+   integer exactly, whether given as a decimal string or as a float,
+   instead of returning the zero digit.  A Math::BigInt argument is
+   no longer required for this.
+
+ - from_base() now returns a Math::BigInt when the result does not fit
+   in a native integer, instead of a float that had silently lost the
+   low-order digits.  Results that fit are plain Perl integers, as
+   before.
+
+ - to_base() croaks when given an infinity or NaN, rather than
+   returning the zero digit.
+
+ - to_base() of a number between -1 and 0, such as -0.5, now returns
+   the zero digit rather than the zero digit with a minus sign ("0",
+   not "-0").
+
 1.19 - Thu Jun  8 00:20:13 CDT 2017
 
  - No code changes; didn't update the version number correctly in the last release.

@@ -1,6 +1,7 @@
 use strict;
 package Math::BaseCalc;
 use Carp;
+use Math::BigInt;
 
 sub new {
   my ($pack, %opts) = @_;
@@ -54,44 +55,135 @@ sub _digitsets {
 
 sub from_base {
   my $self = shift;
-  return -1*$self->from_base(substr($_[0],1)) if !$self->{has_dash} && $_[0] =~ /^-/; # Handle negative numbers
+  if (!$self->{has_dash} && $_[0] =~ /^-/) { # Handle negative numbers
+    my $abs = $self->from_base(substr($_[0],1));
+    $abs = 0 unless defined $abs; # Invalid digits after the sign give 0, as before
+
+    # Native integers are lopsided: they reach 2**64-1 when positive
+    # (unsigned) but only -2**63 when negative (signed).  Negating a
+    # magnitude above 2**63 therefore cannot give a native integer; Perl
+    # would quietly produce a float, and e.g. -18446744073709551615
+    # would round to -18446744073709551616.  Use Math::BigInt for those.
+    # (The digits-only check leaves alone a magnitude that is already a
+    # float because it had a fractional part; those print as 1.8e+19.)
+    $abs = Math::BigInt->new($abs)
+      if !ref $abs && $abs > (~0 >> 1) + 1 && "$abs" =~ /^\d+$/;
+    return -$abs;
+  }
   my $str = shift;
   my $dignum = @{$self->{digits}};
 
   # Deal with stuff after the decimal point
   my $add_in = 0;
   if (!$self->{has_dot} && $str =~ s/\.(.+)//) {
-    $add_in = $self->from_base(reverse $1)/$dignum**length($1);
+    my $frac = $self->from_base(reverse $1);
+    $frac = $frac->numify if ref $frac;
+    $add_in = $frac/$dignum**length($1);
   }
 
   $str = reverse $str;
   my $result = 0;
   my $trans = $self->{trans};
+
+  # How precision used to be lost here: $result is built up one digit at
+  # a time as $result*$dignum + $digit.  Perl keeps that as an exact
+  # native integer only while it fits (up to ~0, which is 2**64-1 on a
+  # 64-bit perl).  One digit further and Perl quietly switches to a
+  # float, which holds only 53 bits of mantissa (about 15-17 significant
+  # decimal digits); every digit below that is rounded away.  So in hex,
+  #
+  #   from_base('ffffffffffffffff')   # 18446744073709551615, exact
+  #   from_base('10000000000000001')  # 1.84467440737096e+19, not
+  #                                   # 18446744073709551617
+  #
+  # with no warning that the answer was only approximate.
+  #
+  # To avoid that we need to notice the overflow *before* it happens.
+  # The largest native integer that can take one more digit without
+  # overflowing is $max_quot (followed by a digit of at most $max_rem).
+  my $max_rem  = ~0 % $dignum;
+  my $max_quot = (~0 - $max_rem) / $dignum;
+
   while (length $str) {
     ## no critic
     return undef unless exists $trans->{substr($str,0,1)};
-    # For large numbers, force result to be an integer (not a float)
-    $result = int($result*$dignum + $trans->{chop $str});
+    my $digit = $trans->{chop $str};
+
+    # This digit would push $result past the native integer range.
+    # Switch to Math::BigInt, which is exact at any size, rather than
+    # letting Perl degrade to a float and drop the low-order digits.
+    if (!ref $result && ($result > $max_quot || ($result == $max_quot && $digit > $max_rem))) {
+      $result = Math::BigInt->new($result);
+    }
+
+    # While still native, int() keeps the result an integer (not a float)
+    $result = ref $result ? $result*$dignum + $digit : int($result*$dignum + $digit);
   }
 
-  # The bizarre-looking next line is necessary for proper handling of very large numbers
-  return $add_in ? $result + $add_in : $result;
+  # A fractional part can only be represented as a float, so a number
+  # with one is returned as a float even if its integer part is huge.
+  return $add_in ? (ref $result ? $result->numify : $result) + $add_in : $result;
 }
 
 sub to_base {
   my ($self,$num) = @_;
-  return '-'.$self->to_base(-1*$num) if $num<0; # Handle negative numbers
+  $num = _exact_int($num) unless ref $num;
+  return '-'.$self->to_base(-$num) if $num<0; # Handle negative numbers
 
   my $dignum = @{$self->{digits}};
 
   my $result = '';
   while ($num>0) {
-    substr($result,0,0) = $self->{digits}[ $num % $dignum ];
-    use integer;
-    $num /= $dignum;
-    #$num = (($num - ($num % $dignum))/$dignum);  # An alternative to the above
+    my $rem = $num % $dignum;
+    substr($result,0,0) = $self->{digits}[ $rem ];
+    # Exact division: $num - $rem is a multiple of $dignum, so the
+    # quotient is an integer and Perl keeps it as one.
+    #
+    # This used to be "use integer; $num /= $dignum".  "use integer"
+    # arithmetic is *signed*, so a native integer above 2**63-1 was
+    # reinterpreted as a negative number: the quotient came out negative,
+    # the "while ($num>0)" loop stopped after a single digit, and e.g.
+    # to_base(18446744073709551615) in hex returned "f" rather than
+    # "ffffffffffffffff".
+    $num = ($num - $rem)/$dignum;
   }
   return length $result ? $result : $self->{digits}[0];
+}
+
+# Returns the integer part of a plain Perl number (or numeric string).
+# Anything outside the native integer range comes back as a Math::BigInt,
+# so that no digits are lost during conversion.
+#
+# Without this, a number of 2**64 or more reached the loop in to_base()
+# as a float, where "use integer" made nonsense of it and the result was
+# just the zero digit.  That was true even for a string such as
+# '18446744073709551617', whose digits are all there to be read: using
+# it as a number converts it to the nearest float (18446744073709551616)
+# and the difference is gone before any arithmetic is done.
+sub _exact_int {
+  my $num = shift;
+
+  if ($num =~ /^\s*[-+]?\d+\s*$/) {
+    # An integer written out in full, so every digit is there to be
+    # read.  If Perl can hold it natively it prints back unchanged; if
+    # not (it became a float, and prints as 1.84467440737096e+19 or the
+    # like), hand the text to Math::BigInt so that nothing is rounded.
+    # Comparing against ~0 numerically would not do: the comparison is
+    # itself made in floating point, where 2**64-1 and 2**64 are equal.
+    my $native = $num + 0;
+    return "$native" eq $num ? $native : Math::BigInt->new($num);
+  }
+
+  # Otherwise it is a float (or not a number at all).  Below 2**64 its
+  # integer part fits in a native integer.
+  return int($num) if abs($num) < ~0 + 1.0;
+
+  # A float that large has already lost whatever digits it was going to
+  # lose.  "%.0f" writes out the integer it exactly represents, which
+  # is the best that can be done with it.
+  my $big = Math::BigInt->new(sprintf('%.0f', $num));
+  croak "Cannot convert '$num' to another base" if $big->is_nan || $big->is_inf;
+  return $big;
 }
 
 
@@ -133,6 +225,34 @@ result:
  $calc36 = new Math::BaseCalc(digits=>[0..9,'a'..'z']);
 
  $in_base_36 = $calc36->to_base( $calc7->from_base('3506') );
+
+=head2 Large numbers
+
+Numbers that fit in one of Perl's native integers (up to C<2**64-1> on
+a 64-bit perl) are converted exactly, and from_base() returns them as
+ordinary Perl integers.
+
+Beyond that range a native Perl number is a float, which cannot hold
+every digit.  So that nothing is lost, from_base() returns a
+L<Math::BigInt> object when the result is too large for a native
+integer, and to_base() accepts a L<Math::BigInt> object or a string of
+decimal digits of any length:
+
+ $calc16 = new Math::BaseCalc(digits=>'hex');
+
+ $big = $calc16->from_base('100000000000000000000000000000001');
+ print "$big\n";  # 340282366920938463463374607431768211457
+
+ print $calc16->to_base('340282366920938463463374607431768211457');
+
+A float passed to to_base() is converted according to its exact value,
+which may not be the number you wrote in your source code; pass a
+string or a L<Math::BigInt> to avoid that.  A number with a fractional
+part is always returned by from_base() as a float.
+
+Note that the native range is not symmetric: it runs from C<-2**63> to
+C<2**64-1> on a 64-bit perl.  So from_base() returns a native integer
+for C<18446744073709551615>, but a L<Math::BigInt> for its negative.
 
 If you just need to handle regular octal & hexdecimal strings, you
 probably don't need this module.  See the sprintf(), oct(), and hex()
